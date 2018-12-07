@@ -47,14 +47,22 @@ public class ProdutoBorda {
   @PutMapping("/produtos")
   public void atualizar(@RequestBody Produto produto){
     if( produto.getSku() == 0 ) throw new MsgException("Deve ser informado o ID/SKU do produto que será atualizado!", null);
-    produtoControle.atualizar(produto);
+    int atualizados = produtoControle.atualizar(produto);
+    if( atualizados < 1 ){
+      log.warn("Recebemos requisição para atualizar o Produto de ID/SKU: {}, mas este ID/SKU não existe!", produto.getSku());
+      throw new MsgException("Não existe nenhum Produto com este ID/SKU!", null);
+    }
     log.info("Atualizado o Produto de ID/SKU: {}", produto.getSku());
   }
   
   @DeleteMapping("/produtos/{id}")
   public void deletar(@PathVariable("id") int id){
     if( id == 0 ) throw new MsgException("Deve ser informado o ID/SKU do produto que será deletado!", null);
-    produtoControle.deletar(id);
+    int deletados = produtoControle.deletar(id);
+    if( deletados < 1 ){
+      log.warn("Recebemos requisição para deletar o Produto de ID/SKU: {}, mas este ID/SKU não existe!", id);
+      throw new MsgException("Não existe nenhum Produto com este ID/SKU!", null);
+    }
     log.info("Deletado o Produto de ID/SKU: {}", id);
   }
   

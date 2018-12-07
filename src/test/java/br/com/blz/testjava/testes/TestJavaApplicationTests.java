@@ -5,12 +5,11 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import br.com.blz.testjava.controles.ProdutoControle;
 import br.com.blz.testjava.entidades.db.Inventory;
@@ -18,14 +17,15 @@ import br.com.blz.testjava.entidades.db.Produto;
 import br.com.blz.testjava.entidades.db.Warehouse;
 
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import lombok.extern.slf4j.Slf4j;
 
 @ActiveProfiles("testes")
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
+@Tag("controles")
 @Slf4j
-//@Ignore
 public class TestJavaApplicationTests {
 	
 	@Autowired
@@ -38,20 +38,13 @@ public class TestJavaApplicationTests {
 		Warehouse warehouse1;
 		Warehouse warehouse2;
 		
-		// --- 1
-		produto = new Produto();
-		produto.setName("Produto um");
-		inventory = new Inventory();
-		produto.setInventory(inventory);
-		warehouse1 = new Warehouse();
-		warehouse1.setType("tipo-1");
-		warehouse1.setLocality("SP");
-		warehouse1.setQuantity(12);
-		warehouse2 = new Warehouse();
-		warehouse2.setType("tipo-2");
-		warehouse2.setLocality("RJ");
-		warehouse2.setQuantity(4);
-		inventory.setWarehouses(Arrays.asList(warehouse1,warehouse2));
+		// --- Criar
+		produto = Produto.builder().name("Produto um")
+			.inventory( Inventory.builder().warehouses(Arrays.asList(
+				Warehouse.builder().type("tipo-1").locality("SP").quantity(12).build() ,
+				Warehouse.builder().type("tipo-2").locality("RJ").quantity( 4).build() 
+			)).build() )
+			.build();
 		
 		produtoControle.gravar(produto);
 		log.info("Foi gravado o Produdo: {}", produto);

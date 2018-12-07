@@ -22,7 +22,7 @@ public class ProdutoControle {
 			.fetch("inventory")
 			.fetch("inventory.warehouses")
 			.findList();
-    for(Produto p : produtos) preencherBusca(p);
+    for(Produto p : produtos) preencherProduto(p);
     return produtos;
   }
   public Produto buscar(int id){
@@ -31,7 +31,7 @@ public class ProdutoControle {
 			.fetch("inventory.warehouses")
       .where().eq("sku", id)
 			.findOne();
-    preencherBusca(produto);
+    preencherProduto(produto);
     return produto;
   }
   
@@ -68,22 +68,24 @@ public class ProdutoControle {
         Ebean.save(warehouse);
       }
     }
-    preencherBusca(produto);
+    preencherProduto(produto);
   }
   
   /**
    * Este método
    * @param produto Produto que será atualizado
    */
-  public void atualizar(Produto produto){
-    deletar(produto.getSku());
+  public int atualizar(Produto produto){
+    int atualizados = deletar(produto.getSku());
+    if( atualizados < 1 ) return atualizados; // terminar por aqui, para não cadastrar um produto em uma requisição de atualização
     gravar(produto);
-    preencherBusca(produto);
+    preencherProduto(produto);
+    return atualizados;
   }
   
   
-  public void deletar(int id){
-    Ebean.delete(Produto.class, id);
+  public int deletar(int id){
+    return Ebean.delete(Produto.class, id);
   }
   
   // --------------------------------------------
@@ -92,9 +94,15 @@ public class ProdutoControle {
    * Método para calcular a quantidade de produtos disponíveis, e verificar se o produto ainda
    * é 'vendável'.
    * 
+   * <i>
+   * Preferível colocar este tipo de código fora das entidades (de métodos com "@PostConstruct"), pois 
+   * este método irá causar a busca de todas as referências que ainda estão 'atrasadas' (Lazy), causando várias buscas 
+   * no DB.
+   * </i>
+   * 
    * @param produto Produto que será analisado
    */
-  private void preencherBusca(Produto produto){
+  public void preencherProduto(Produto produto){
     if( produto == null ) return;
     if( produto.getInventory() == null ) return;
     if( produto.getInventory().getWarehouses() == null ) return;

@@ -18,10 +18,13 @@ import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@Data
+@Data @Builder @AllArgsConstructor @NoArgsConstructor
 @Entity
 @Table(name = "inventory")
 public class Inventory {

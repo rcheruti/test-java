@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+/**
+ * Uma instância dessa classe será usada para tratar exceções que subirem a pilha até os códigos de borda.
+ */
 @ControllerAdvice
 public class MsgExceptionAdvice {
   
